@@ -12,62 +12,64 @@ class LecturerController extends Controller
      */
     public function index()
     {
-        $lecturer = Auth::user(); // assuming the authenticated user is the lecturer
+        $lecturer = Auth::user();
 
         return view('lecturer.dashboard', compact('lecturer'));
     }
 
     /**
-     * Show the list of courses assigned to the lecturer.
+     * Display courses assigned to the lecturer.
      */
     public function courses()
     {
         $lecturer = Auth::user();
-        // Assuming you have a method to fetch assigned courses, for example:
-        $courses = $lecturer->courses; // Fetch courses associated with the lecturer
+
+        // Ensure lecturer has a relationship defined as `courses()`
+        $courses = $lecturer->courses ?? [];
 
         return view('lecturer.courses', compact('courses'));
     }
 
     /**
-     * Show the lecturer's schedule.
+     * Display the lecturer's schedule.
      */
     public function schedule()
     {
         $lecturer = Auth::user();
-        // Assuming you have a method to fetch the schedule
-        $schedule = $lecturer->schedule; // Fetch the lecturer's schedule
+
+        // Ensure lecturer has a relationship defined as `schedule()`
+        $schedule = $lecturer->schedule ?? [];
 
         return view('lecturer.schedule', compact('schedule'));
     }
 
     /**
-     * Display the QR code scanner for attendance marking.
+     * Show the QR code scanner for attendance marking.
      */
     public function scanAttendance()
     {
-        // Here you can integrate a QR code scanner for attendance
         return view('lecturer.attendance.scan');
     }
 
     /**
-     * Show the attendance reports for the lecturer's courses.
+     * Display attendance reports for the lecturer's courses.
      */
     public function attendanceReports()
     {
         $lecturer = Auth::user();
-        // Assuming you have a method to fetch attendance reports, for example:
-        $attendanceReports = $lecturer->attendanceReports; // Fetch attendance reports
+
+        // Ensure lecturer has a method or relationship to get attendance reports
+        $attendanceReports = $lecturer->attendanceReports ?? [];
 
         return view('lecturer.attendance.reports', compact('attendanceReports'));
     }
 
     /**
-     * Show the lecturer's profile page.
+     * Display the lecturer's profile information.
      */
     public function profile()
     {
-        $lecturer = Auth::user(); // Get the logged-in lecturer's information
+        $lecturer = Auth::user();
 
         return view('lecturer.profile', compact('lecturer'));
     }

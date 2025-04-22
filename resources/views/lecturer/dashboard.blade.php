@@ -16,7 +16,7 @@
                         <a class="nav-link" href="{{ route('lecturer.attendance.scan') }}">Mark Attendance</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('lecturer.reports') }}">Attendance Reports</a>
+                        <a class="nav-link" href="{{ route('lecturer.attendance.reports') }}">Attendance Reports</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('lecturer.profile') }}">Profile</a>
@@ -69,7 +69,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Attendance Reports</h5>
                     <p class="card-text">View, filter, and export attendance records for your courses.</p>
-                    <a href="{{ route('lecturer.reports') }}" class="btn btn-info">View Reports</a>
+                    <a href="{{ route('lecturer.attendance.reports') }}" class="btn btn-info">View Reports</a>
                 </div>
             </div>
         </div>
