@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User; // Assuming your students and lecturers are in the User model
-use App\Models\Lecturer;
+use App\Models\User; // Assuming your students are in the User model
+use App\Models\Lecturer; // Lecturer model for counting lecturers
 use App\Models\Course;
 use App\Models\Department;
 use App\Models\Registration; // If you have this model for handling registrations
@@ -15,7 +15,7 @@ class AdminController extends Controller
     public function index()
     {
         // Fetching actual data
-        $totalStudents = User::where('role', 'student')->count(); // Counting students
+        $totalStudents = User::where('role', 'student')->count(); // Counting students (assumed 'role' column)
         $totalLecturers = Lecturer::count(); // Counting lecturers
         $totalCourses = Course::count(); // Counting courses
         $totalDepartments = Department::count(); // Counting departments
@@ -100,7 +100,7 @@ class AdminController extends Controller
     // Lecturers Management Index
     public function lecturersIndex()
     {
-        $lecturers = Lecturer::paginate(10); // Paginate lecturers, 10 per page
+        $lecturers = Lecturer::with('user')->paginate(10); // Paginate lecturers, 10 per page
         return view('admin.lecturers.index', compact('lecturers'));
     }
 

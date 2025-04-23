@@ -8,49 +8,98 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role',  // Added role field for role-based access control
+        'role', // e.g., 'lecturer', 'student', 'admin'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     /**
-     * Scope to filter by role
+     * Scope to filter by role.
      */
     public function scopeRole($query, $role)
     {
         return $query->where('role', $role);
     }
+
+    /**
+     * Get the courses assigned to the user (for lecturers and students).
+     */
+    public function courses()
+    {
+        if ($this->role === 'student') {
+            return $this->belongsToMany(Course::class, 'course_user', 'user_id', 'course_id');
+        }
+
+        if ($this->role === 'lecturer') {
+            return $this->belongsToMany(Course::class, 'course_user', 'user_id', 'course_id');
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the class schedules (for lecturers only).
+     */
+    public function schedules()
+    {
+        if ($this->role === 'lecturer') {
+            return $this->hasMany(ClassSchedule::class, 'lecturer_id');
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the attendance reports (for lecturers only).
+     */
+    public function attendanceReports()
+    {
+        if ($this->role === 'lecturer') {
+            return $this->hasMany(AttendanceReport::class, 'lecturer_id');
+        }
+
+        return null;
+    }
+
+    /**
+     * Admin can manage everything, but doesn't have courses or schedules.
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Admin can manage users, courses, schedules, etc.
+     * This method is just a basic check for the admin role.
+     */
+    public function isAdminActions()
+    {
+        if ($this->role === 'admin') {
+            // Define any additional logic for the admin if necessary.
+            return true;
+        }
+
+        return false;
+    }
+
+        public function lecturer()
+    {
+        return $this->hasOne(Lecturer::class);
+    }
+
 }

@@ -112,7 +112,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/courses', [LecturerController::class, 'courses'])->name('courses');
 
         // Schedule
-        Route::get('/schedule', [LecturerController::class, 'schedule'])->name('schedule');
+        Route::get('/schedule', [LecturerController::class, 'schedule'])->name('schedule'); // View all schedules
+        Route::get('/schedule/create', [LecturerController::class, 'createSchedule'])->name('schedule.create'); // Show form
+        Route::post('/schedule', [LecturerController::class, 'storeSchedule'])->name('schedule.store'); // Save new schedule
+        Route::get('/schedule/{id}/edit', [LecturerController::class, 'editSchedule'])->name('schedule.edit'); // Edit form
+        Route::put('/schedule/{id}', [LecturerController::class, 'updateSchedule'])->name('schedule.update'); // Update schedule
+        Route::delete('/schedule/{id}', [LecturerController::class, 'destroySchedule'])->name('schedule.destroy'); // Delete schedule
 
         // Attendance Scan (QR)
         Route::get('/attendance/scan', [LecturerController::class, 'scanAttendance'])->name('attendance.scan');
@@ -123,6 +128,7 @@ Route::middleware(['auth'])->group(function () {
         // Profile
         Route::get('/profile', [LecturerController::class, 'profile'])->name('profile');
     });
+
 });
 
 // Breeze Auth Routes

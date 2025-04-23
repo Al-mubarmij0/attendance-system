@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClassSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,8 +24,6 @@ class LecturerController extends Controller
     public function courses()
     {
         $lecturer = Auth::user();
-
-        // Ensure lecturer has a relationship defined as `courses()`
         $courses = $lecturer->courses ?? [];
 
         return view('lecturer.courses', compact('courses'));
@@ -36,11 +35,96 @@ class LecturerController extends Controller
     public function schedule()
     {
         $lecturer = Auth::user();
+        $schedules = $lecturer->schedules ?? [];
 
-        // Ensure lecturer has a relationship defined as `schedule()`
-        $schedule = $lecturer->schedule ?? [];
+        return view('lecturer.schedule.index', compact('schedules'));
+    }
 
-        return view('lecturer.schedule', compact('schedule'));
+    /**
+     * Show form to create a new class schedule.
+     */
+    public function createSchedule()
+    {
+        $lecturer = Auth::user();
+        $courses = $lecturer->courses ?? [];
+
+        return view('lecturer.schedule.create', compact('courses'));
+    }
+
+    /**
+     * Store the newly created class schedule.
+     */
+    public function storeSchedule(Request $request)
+    {
+        $request->validate([
+            'course_id' => 'required|exists:courses,id',
+            'class_date' => 'required|date',
+            'start_time' => 'required',
+            'end_time' => 'required|after:start_time',
+            'location' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+        ]);
+
+        $lecturer = Auth::user();
+
+        $lecturer->schedules()->create([
+            'course_id' => $request->course_id,
+            'class_date' => $request->class_date,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'location' => $request->location,
+            'notes' => $request->notes,
+        ]);
+
+        return redirect()->route('lecturer.schedule')->with('success', 'Class scheduled successfully.');
+    }
+
+    /**
+     * Edit schedule form.
+     */
+    public function editSchedule($id)
+    {
+        $lecturer = Auth::user();
+        $schedule = $lecturer->schedules()->findOrFail($id);
+        $courses = $lecturer->courses ?? [];
+
+        return view('lecturer.schedule.edit', compact('schedule', 'courses'));
+    }
+
+    /**
+     * Update an existing schedule.
+     */
+    public function updateSchedule(Request $request, $id)
+    {
+        $request->validate([
+            'course_id' => 'required|exists:courses,id',
+            'class_date' => 'required|date',
+            'start_time' => 'required',
+            'end_time' => 'required|after:start_time',
+            'location' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+        ]);
+
+        $lecturer = Auth::user();
+        $schedule = $lecturer->schedules()->findOrFail($id);
+
+        $schedule->update($request->only([
+            'course_id', 'class_date', 'start_time', 'end_time', 'location', 'notes'
+        ]));
+
+        return redirect()->route('lecturer.schedule')->with('success', 'Schedule updated successfully.');
+    }
+
+    /**
+     * Delete a schedule.
+     */
+    public function destroySchedule($id)
+    {
+        $lecturer = Auth::user();
+        $schedule = $lecturer->schedules()->findOrFail($id);
+        $schedule->delete();
+
+        return redirect()->route('lecturer.schedule')->with('success', 'Schedule deleted successfully.');
     }
 
     /**
@@ -57,8 +141,6 @@ class LecturerController extends Controller
     public function attendanceReports()
     {
         $lecturer = Auth::user();
-
-        // Ensure lecturer has a method or relationship to get attendance reports
         $attendanceReports = $lecturer->attendanceReports ?? [];
 
         return view('lecturer.attendance.reports', compact('attendanceReports'));
