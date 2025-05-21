@@ -36,8 +36,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Assigned Courses</h5>
                     <p class="card-text">View the list of courses assigned to you this semester.</p>
-                    <a href="{{ route('lecturer.courses') }}" class="btn btn-primary">View Courses</a>
-                </div>
+                    <a href="{{ route('lecturer.courses') }}" class="btn btn-primary">View Courses</a>                </div>
             </div>
         </div>
 

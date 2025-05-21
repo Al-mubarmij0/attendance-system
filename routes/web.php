@@ -64,30 +64,19 @@ Route::middleware(['auth'])->group(function () {
             ->names('students');
 
         // Lecturers
-        Route::resource('lecturers', AdminLecturerController::class)
-            ->parameters(['lecturers' => 'lecturer'])
+        Route::resource('lecturers', \App\Http\Controllers\Admin\LecturerController::class)
             ->except(['show'])
             ->names('lecturers');
 
         // Courses
-        Route::resource('courses', CourseController::class)
+        Route::resource('courses', \App\Http\Controllers\Admin\CourseController::class)
             ->except(['show'])
-            ->names('courses');
+            ->names('courses'); 
 
         // Departments
         Route::resource('departments', DepartmentController::class)
             ->except(['show'])
             ->names('departments');
-
-        // Semesters
-        Route::resource('semesters', SemesterController::class)
-            ->except(['show'])
-            ->names('semesters');
-
-        // Levels
-        Route::resource('levels', LevelController::class)
-            ->except(['show'])
-            ->names('levels');
 
         // Attendance Records
         Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
@@ -102,7 +91,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
         Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
     });
-
     // Lecturer Routes
     Route::prefix('lecturer')->name('lecturer.')->group(function () {
         // Dashboard

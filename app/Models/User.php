@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne; // Add this import
+use Illuminate\Database\Eloquent\Relations\BelongsToMany; // Add this import
 
 class User extends Authenticatable
 {
@@ -27,79 +29,57 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    /**
-     * Scope to filter by role.
-     */
     public function scopeRole($query, $role)
     {
         return $query->where('role', $role);
     }
 
     /**
-     * Get the courses assigned to the user (for lecturers and students).
+     * A User (student) can enroll in many courses.
+     * This uses the 'course_student' pivot table.
      */
-    public function courses()
+    public function courses(): BelongsToMany // Specify return type
     {
-        if ($this->role === 'student') {
-            return $this->belongsToMany(Course::class, 'course_user', 'user_id', 'course_id');
-        }
-
-        if ($this->role === 'lecturer') {
-            return $this->belongsToMany(Course::class, 'course_user', 'user_id', 'course_id');
-        }
-
-        return null;
+         // Assuming 'course_student' is the pivot table for students enrolling in courses
+        return $this->belongsToMany(Course::class, 'course_student', 'user_id', 'course_id')
+                    ->withTimestamps(); // If you want timestamps on the pivot table
     }
 
     /**
-     * Get the class schedules (for lecturers only).
+     * A User (lecturer) has one Lecturer profile.
      */
+    public function lecturer(): HasOne // Specify return type
+    {
+        return $this->hasOne(Lecturer::class);
+    }
+
+    // Keep other methods like schedules, attendanceReports, isAdmin, isAdminActions if they apply
+    // Just make sure they don't conflict with the `lecturer_id` on the Course model for lecturer assignments.
+    // For example, if lecturer_id on ClassSchedule refers to user ID, not lecturer profile ID, that's fine.
+
     public function schedules()
     {
         if ($this->role === 'lecturer') {
-            return $this->hasMany(ClassSchedule::class, 'lecturer_id');
+            return $this->hasMany(ClassSchedule::class, 'lecturer_id'); // Assuming lecturer_id here refers to User ID
         }
-
         return null;
     }
 
-    /**
-     * Get the attendance reports (for lecturers only).
-     */
     public function attendanceReports()
     {
         if ($this->role === 'lecturer') {
-            return $this->hasMany(AttendanceReport::class, 'lecturer_id');
+            return $this->hasMany(AttendanceReport::class, 'lecturer_id'); // Assuming lecturer_id here refers to User ID
         }
-
         return null;
     }
 
-    /**
-     * Admin can manage everything, but doesn't have courses or schedules.
-     */
     public function isAdmin()
     {
         return $this->role === 'admin';
     }
 
-    /**
-     * Admin can manage users, courses, schedules, etc.
-     * This method is just a basic check for the admin role.
-     */
     public function isAdminActions()
     {
-        if ($this->role === 'admin') {
-            // Define any additional logic for the admin if necessary.
-            return true;
-        }
-
-        return false;
+        return $this->role === 'admin';
     }
-
-        public function lecturer()
-    {
-        return $this->hasOne(Lecturer::class);
-    }
-
 }

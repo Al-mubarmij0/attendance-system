@@ -12,7 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('lecturer_course', function (Blueprint $table) {
-            $table->id();
+            $table->id(); // Auto-incrementing ID for the pivot table itself (optional, but harmless)
+
+            // Foreign key for lecturers table
+            $table->foreignId('lecturer_id')->constrained()->onDelete('cascade');
+            // Foreign key for courses table (assuming you have a 'courses' table)
+            $table->foreignId('course_id')->constrained()->onDelete('cascade');
+
+            // Add unique constraint to prevent duplicate entries (optional but good practice)
+            $table->unique(['lecturer_id', 'course_id']);
+
             $table->timestamps();
         });
     }

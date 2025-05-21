@@ -38,23 +38,6 @@
             </a>
         </li>
 
-        <!-- Semester & Level -->
-        <li class="nav-item mt-3 mb-2">
-            <span class="text-muted small">🗓️ Semester & Level</span>
-        </li>
-        <li class="nav-item mb-2">
-            <a href="{{ route('admin.semesters.index') }}"
-               class="nav-link text-white {{ request()->routeIs('admin.semesters.*') ? 'bg-secondary rounded' : '' }}">
-                <i class="bi bi-calendar-event-fill me-2 text-danger"></i> Semesters
-            </a>
-        </li>
-        <li class="nav-item mb-2">
-            <a href="{{ route('admin.levels.index') }}"
-               class="nav-link text-white {{ request()->routeIs('admin.levels.*') ? 'bg-secondary rounded' : '' }}">
-                <i class="bi bi-layers-fill me-2 text-info"></i> Levels
-            </a>
-        </li>
-
         <!-- Attendance -->
         <li class="nav-item mt-3 mb-2">
             <span class="text-muted small">📊 Attendance</span>
