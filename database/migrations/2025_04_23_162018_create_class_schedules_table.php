@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
     
-            $table->foreign('lecturer_id')->references('id')->on('users');
+            $table->foreign('lecturer_id')->references('id')->on('lecturers');
             $table->foreign('course_id')->references('id')->on('courses');
         });
     }

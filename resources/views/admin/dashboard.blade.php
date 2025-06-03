@@ -43,9 +43,6 @@
                 <div class="col-md-4">
                     <x-admin.stat-card title="Total Courses" count="{{ $totalCourses }}" color="info" />
                 </div>
-                <div class="col-md-4">
-                    <x-admin.stat-card title="Pending Students" count="{{ $pendingRegistrations }}" color="danger" />
-                </div>
             </div>
         </div>
 

@@ -1,52 +1,101 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+@extends('layouts.app')
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-        </div>
+@section('header')
+    <div class="text-center mt-4">
+        <h2 class="h4 fw-bold text-dark">Join Our Community</h2>
+        <p class="text-muted">Register as a student to get started</p>
+    </div>
+@endsection
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+@section('content')
+<div class="d-flex align-items-center justify-content-center min-vh-100">
+    <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%;">
+        <h2 class="text-center mb-4 fw-bold">Student Registration</h2>
+        <p class="text-center text-primary fw-bold mb-4">Only Student Can Register</p>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        {{-- Display general session messages (like success/error from controller) --}}
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        <form method="POST" action="{{ route('register') }}">
+            @csrf
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+            <div class="mb-3">
+                <label for="name" class="form-label">Full Name</label>
+                <input id="full_name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name"
+                    class="form-control @error('name') is-invalid @enderror" placeholder="Enter your full name">
+                @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username"
+                    class="form-control @error('email') is-invalid @enderror" placeholder="you@example.com">
+                @error('email')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="form-group">
+                <label for="matric_number">Matric Number</label>
+                <input type="text" class="form-control" name="matric_number" required>
+            </div>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
+            <div class="form-group">
+                <label for="department">Department</label>
+                <input type="text" class="form-control" name="department" required>
+            </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
+            <div class="form-group">
+                <label for="level">Level</label>
+                <select class="form-control" name="level" required>
+                    <option value="100">100 Level</option>
+                    <option value="200">200 Level</option>
+                    <option value="300">300 Level</option>
+                    <option value="400">400 Level</option>
+                </select>
+            </div>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input id="password" type="password" name="password" required autocomplete="new-password"
+                    class="form-control @error('password') is-invalid @enderror" placeholder="********">
+                @error('password')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="mb-4"> {{-- Changed to mb-4 to match login --}}
+                <label for="password_confirmation" class="form-label">Confirm Password</label>
+                <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password"
+                    class="form-control" placeholder="********">
+            </div>
+
+            <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-primary">
+                    Register
+                </button>
+            </div>
+
+            <div class="text-center">
+                <a class="small text-decoration-none" href="{{ route('login') }}">
+                    Already registered?
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection

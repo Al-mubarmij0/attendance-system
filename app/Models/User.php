@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasOne; // Add this import
-use Illuminate\Database\Eloquent\Relations\BelongsToMany; // Add this import
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+// Removed BelongsToMany because enrolledCourses moves to Student model
 
 class User extends Authenticatable
 {
@@ -16,7 +17,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // e.g., 'lecturer', 'student', 'admin'
+        'role',
     ];
 
     protected $hidden = [
@@ -35,42 +36,49 @@ class User extends Authenticatable
     }
 
     /**
-     * A User (student) can enroll in many courses.
-     * This uses the 'course_student' pivot table.
+     * A User (student) has one Student profile.
      */
-    public function courses(): BelongsToMany // Specify return type
+    public function student(): HasOne
     {
-         // Assuming 'course_student' is the pivot table for students enrolling in courses
-        return $this->belongsToMany(Course::class, 'course_student', 'user_id', 'course_id')
-                    ->withTimestamps(); // If you want timestamps on the pivot table
+        return $this->hasOne(Student::class);
     }
+
+    // REMOVE THIS RELATIONSHIP FROM User MODEL
+    // public function enrolledCourses(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Course::class, 'course_user', 'user_id', 'course_id')->withTimestamps();
+    // }
 
     /**
      * A User (lecturer) has one Lecturer profile.
      */
-    public function lecturer(): HasOne // Specify return type
+    public function lecturer(): HasOne
     {
         return $this->hasOne(Lecturer::class);
     }
 
-    // Keep other methods like schedules, attendanceReports, isAdmin, isAdminActions if they apply
-    // Just make sure they don't conflict with the `lecturer_id` on the Course model for lecturer assignments.
-    // For example, if lecturer_id on ClassSchedule refers to user ID, not lecturer profile ID, that's fine.
-
-    public function schedules()
+    /**
+     * A User (lecturer) can be assigned many courses.
+     * This means `courses.lecturer_id` refers to `users.id` directly.
+     */
+    public function assignedCourses(): HasMany
     {
-        if ($this->role === 'lecturer') {
-            return $this->hasMany(ClassSchedule::class, 'lecturer_id'); // Assuming lecturer_id here refers to User ID
-        }
-        return null;
+        return $this->hasMany(Course::class, 'lecturer_id');
     }
 
-    public function attendanceReports()
+    /**
+     * Get the class schedules for this User if they are a lecturer.
+     * THIS REMAINS CORRECTLY ON THE User MODEL.
+     */
+    public function classSchedules(): HasMany
     {
-        if ($this->role === 'lecturer') {
-            return $this->hasMany(AttendanceReport::class, 'lecturer_id'); // Assuming lecturer_id here refers to User ID
-        }
-        return null;
+        return $this->hasMany(ClassSchedule::class, 'lecturer_id'); // 'lecturer_id' in class_schedules points to 'users.id'
+    }
+
+    // Your other methods
+    public function attendanceReports(): HasMany
+    {
+        return $this->hasMany(AttendanceReport::class, 'user_id');
     }
 
     public function isAdmin()
@@ -78,8 +86,13 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
-    public function isAdminActions()
+    public function isLecturer()
     {
-        return $this->role === 'admin';
+        return $this->role === 'lecturer';
+    }
+
+    public function isStudent()
+    {
+        return $this->role === 'student';
     }
 }

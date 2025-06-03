@@ -20,8 +20,8 @@ use App\Http\Controllers\Admin\LecturerController as AdminLecturerController;
 Route::get('/', fn () => view('auth.login'))->name('login');
 
 // Student Registration
-Route::get('/register', [StudentRegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [StudentRegisterController::class, 'register'])->name('register.submit');
+Route::post('/register', [RegisteredUserController::class, 'store'])->name('register');
+
 
 // Dashboard Redirect Based on Role
 Route::get('/dashboard', function () {

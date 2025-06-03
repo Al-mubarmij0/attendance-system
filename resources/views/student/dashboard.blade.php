@@ -38,12 +38,14 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h4 class="mb-1">Welcome back, {{ Auth::user()->name }}!</h4>
-                            <p class="text-muted mb-0">Student ID: {{ Auth::user()->student_id }}</p>
+                            <h4 class="mb-1">Welcome back, {{ $user->name }}!</h4>
+                            {{-- Now accessing student-specific data via the $studentProfile object --}}
+                            <p class="text-muted mb-0">Student ID: {{ $studentProfile->index_number ?? 'N/A' }}</p>
+                            <p class="mb-0"><strong>Department:</strong> {{ $studentProfile->department ?? 'N/A' }}</p>
+                        
                         </div>
                         <div class="text-end">
-                            <p class="mb-0"><strong>Current Semester:</strong> Spring 2023</p>
-                            <p class="mb-0"><strong>Program:</strong> Computer Science</p>
+                            <p class="mb-0"><strong>Level:</strong> {{ $studentProfile->level ?? 'N/A' }}</p>
                         </div>
                     </div>
                 </div>
@@ -52,7 +54,6 @@
     </div>
 
     <div class="row g-4">
-        <!-- Attendance Summary -->
         <div class="col-md-6">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
@@ -60,7 +61,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
                             <p class="mb-0">Overall Attendance Rate</p>
-                            <h2 class="mb-0">87%</h2>
+                            <h2 class="mb-0">87%</h2> {{-- Replace with dynamic data later --}}
                         </div>
                         <div class="bg-success bg-opacity-10 p-3 rounded">
                             <i class="bi bi-check-circle-fill text-success fs-1"></i>
@@ -74,24 +75,22 @@
             </div>
         </div>
 
-        <!-- QR Code Card -->
         <div class="col-md-6">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title">Your QR Code</h5>
                     <div class="text-center mb-3">
-                        <img src="{{ asset('storage/qrcodes/'.Auth::user()->id.'.png') }}" alt="QR Code" style="width: 150px; height: 150px;" class="img-fluid">
+                        <img src="{{ asset('storage/qrcodes/'.$user->id.'.png') }}" alt="QR Code" style="width: 150px; height: 150px;" class="img-fluid">
                     </div>
                     <p class="card-text">Present this QR code to mark your attendance in class.</p>
                     <div class="d-flex justify-content-between">
                         <a href="#" class="btn btn-primary">View Full QR</a>
-                        <a href="{{ asset('storage/qrcodes/'.Auth::user()->id.'.png') }}" download class="btn btn-outline-secondary">Download</a>
+                        <a href="{{ asset('storage/qrcodes/'.$user->id.'.png') }}" download class="btn btn-outline-secondary">Download</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Current Courses -->
         <div class="col-md-12">
             <div class="card shadow-sm">
                 <div class="card-body">
@@ -111,39 +110,31 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse($enrolledCourses as $course)
                                 <tr>
-                                    <td>CS101</td>
-                                    <td>Introduction to Programming</td>
-                                    <td>Dr. Smith</td>
-                                    <td>Mon/Wed 10:00-11:30</td>
+                                    <td>{{ $course->code }}</td>
+                                    <td>{{ $course->name }}</td>
+                                    {{-- Access lecturer via Course model's lecturer relationship, then lecturer's user name --}}
+                                    <td>{{ $course->lecturer->user->name ?? 'N/A' }}</td>
                                     <td>
+                                        @if($course->classSchedules->isNotEmpty())
+                                            {{ $course->classSchedules->count() }} classes scheduled
+                                        @else
+                                            No schedules
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{-- Placeholder for dynamic attendance rate --}}
                                         <div class="progress" style="height: 20px;">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 92%;" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100">92%</div>
+                                            <div class="progress-bar bg-info" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">N/A</div>
                                         </div>
                                     </td>
                                 </tr>
+                                @empty
                                 <tr>
-                                    <td>CS201</td>
-                                    <td>Data Structures</td>
-                                    <td>Prof. Johnson</td>
-                                    <td>Tue/Thu 13:00-14:30</td>
-                                    <td>
-                                        <div class="progress" style="height: 20px;">
-                                            <div class="progress-bar bg-warning" role="progressbar" style="width: 78%;" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100">78%</div>
-                                        </div>
-                                    </td>
+                                    <td colspan="5" class="text-center text-muted">You are not currently enrolled in any courses.</td>
                                 </tr>
-                                <tr>
-                                    <td>MATH202</td>
-                                    <td>Discrete Mathematics</td>
-                                    <td>Dr. Williams</td>
-                                    <td>Fri 09:00-12:00</td>
-                                    <td>
-                                        <div class="progress" style="height: 20px;">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 95%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100">95%</div>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -151,42 +142,44 @@
             </div>
         </div>
 
-        <!-- Upcoming Classes -->
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Upcoming Classes</h5>
                     <div class="list-group">
+                        @forelse($upcomingSchedules as $schedule)
                         <div class="list-group-item">
                             <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">CS101 - Introduction to Programming</h6>
-                                <small class="text-success">Today</small>
+                                <h6 class="mb-1">
+                                    {{ $schedule->course->code }} - {{ $schedule->course->name }}
+                                </h6>
+                                {{-- Make sure Carbon is imported in your layout or use full namespace --}}
+                                <small class="{{ Carbon\Carbon::parse($schedule->class_date)->isToday() ? 'text-success' : (Carbon\Carbon::parse($schedule->class_date)->isTomorrow() ? 'text-primary' : '') }}">
+                                    {{ Carbon\Carbon::parse($schedule->class_date)->calendar() }}
+                                </small>
                             </div>
-                            <p class="mb-1">10:00 AM - 11:30 AM</p>
-                            <small>Room: CS-101</small>
+                            <p class="mb-1">
+                                {{ Carbon\Carbon::parse($schedule->start_time)->format('h:i A') }} -
+                                {{ Carbon\Carbon::parse($schedule->end_time)->format('h:i A') }}
+                            </p>
+                            <small>
+                                Room: {{ $schedule->location ?? 'N/A' }} |
+                                Lecturer: {{ $schedule->lecturer->name ?? 'N/A' }}
+                            </small>
+                            @if($schedule->notes)
+                                <p class="mb-0 mt-1"><small class="text-muted">Notes: {{ $schedule->notes }}</small></p>
+                            @endif
                         </div>
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">MATH202 - Discrete Mathematics</h6>
-                                <small class="text-primary">Tomorrow</small>
-                            </div>
-                            <p class="mb-1">09:00 AM - 12:00 PM</p>
-                            <small>Room: MATH-302</small>
+                        @empty
+                        <div class="list-group-item text-muted">
+                            No upcoming classes found for your enrolled courses.
                         </div>
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">CS201 - Data Structures</h6>
-                                <small>Wed, May 24</small>
-                            </div>
-                            <p class="mb-1">01:00 PM - 02:30 PM</p>
-                            <small>Room: CS-205</small>
-                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Attendance -->
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-body">

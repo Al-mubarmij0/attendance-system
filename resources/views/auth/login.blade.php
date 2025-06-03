@@ -53,6 +53,15 @@
                     </a>
                 </div>
             @endif
+
+            {{-- New: Link to Registration Page --}}
+            <div class="text-center">
+                <p class="small text-muted mb-0">Don't have an account?
+                    <a href="{{ route('register') }}" class="text-decoration-none fw-bold">
+                        Register here
+                    </a>
+                </p>
+            </div>
         </form>
     </div>
 </div>
