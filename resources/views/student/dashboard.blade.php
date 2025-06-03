@@ -142,7 +142,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+       <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Upcoming Classes</h5>
@@ -153,17 +153,16 @@
                                 <h6 class="mb-1">
                                     {{ $schedule->course->code }} - {{ $schedule->course->name }}
                                 </h6>
-                                {{-- Make sure Carbon is imported in your layout or use full namespace --}}
-                                <small class="{{ Carbon\Carbon::parse($schedule->class_date)->isToday() ? 'text-success' : (Carbon\Carbon::parse($schedule->class_date)->isTomorrow() ? 'text-primary' : '') }}">
-                                    {{ Carbon\Carbon::parse($schedule->class_date)->calendar() }}
+                                <small class="text-muted">
+                                    {{ $schedule->day }} {{-- Now using 'day' instead of parsing date --}}
                                 </small>
                             </div>
                             <p class="mb-1">
-                                {{ Carbon\Carbon::parse($schedule->start_time)->format('h:i A') }} -
-                                {{ Carbon\Carbon::parse($schedule->end_time)->format('h:i A') }}
+                                {{ \Carbon\Carbon::parse($schedule->start_time)->format('h:i A') }} -
+                                {{ \Carbon\Carbon::parse($schedule->end_time)->format('h:i A') }}
                             </p>
                             <small>
-                                Room: {{ $schedule->location ?? 'N/A' }} |
+                                Room: {{ $schedule->venue ?? 'N/A' }} |
                                 Lecturer: {{ $schedule->lecturer->name ?? 'N/A' }}
                             </small>
                             @if($schedule->notes)
@@ -179,6 +178,7 @@
                 </div>
             </div>
         </div>
+
 
         <div class="col-md-6">
             <div class="card shadow-sm">

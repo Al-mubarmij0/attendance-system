@@ -14,6 +14,7 @@ use App\Http\Controllers\SemesterController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\QRCodeController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\Admin\LecturerController as AdminLecturerController;
 
 // Landing Page (Login)
@@ -57,12 +58,12 @@ Route::middleware(['auth'])->group(function () {
 
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function () {
+
         // Students
-        Route::resource('students', AdminController::class)
-            ->parameters(['students' => 'student'])
+        Route::resource('students', \App\Http\Controllers\Admin\StudentController::class)
             ->except(['show'])
             ->names('students');
-
+  
         // Lecturers
         Route::resource('lecturers', \App\Http\Controllers\Admin\LecturerController::class)
             ->except(['show'])
@@ -100,12 +101,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/courses', [LecturerController::class, 'courses'])->name('courses');
 
         // Schedule
-        Route::get('/schedule', [LecturerController::class, 'schedule'])->name('schedule'); // View all schedules
-        Route::get('/schedule/create', [LecturerController::class, 'createSchedule'])->name('schedule.create'); // Show form
-        Route::post('/schedule', [LecturerController::class, 'storeSchedule'])->name('schedule.store'); // Save new schedule
-        Route::get('/schedule/{id}/edit', [LecturerController::class, 'editSchedule'])->name('schedule.edit'); // Edit form
-        Route::put('/schedule/{id}', [LecturerController::class, 'updateSchedule'])->name('schedule.update'); // Update schedule
-        Route::delete('/schedule/{id}', [LecturerController::class, 'destroySchedule'])->name('schedule.destroy'); // Delete schedule
+        Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule'); // View all schedules
+        Route::get('/schedule/create', [ScheduleController::class, 'create'])->name('schedule.create'); // Show form
+        Route::post('/schedule', [ScheduleController::class, 'store'])->name('schedule.store'); // Save new schedule
+        Route::get('/schedule/{id}/edit', [ScheduleController::class, 'edit'])->name('schedule.edit'); // Edit form
+        Route::put('/schedule/{id}', [ScheduleController::class, 'update'])->name('schedule.update'); // Update schedule
+        Route::delete('/schedule/{id}', [ScheduleController::class, 'destroy'])->name('schedule.destroy'); // Delete schedule
 
         // Attendance Scan (QR)
         Route::get('/attendance/scan', [LecturerController::class, 'scanAttendance'])->name('attendance.scan');

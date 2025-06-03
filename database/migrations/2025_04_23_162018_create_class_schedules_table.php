@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('lecturer_id');
             $table->unsignedBigInteger('course_id');
-            $table->date('class_date');
+            $table->string('day'); // Replaces class_date
             $table->time('start_time');
             $table->time('end_time');
-            $table->string('location')->nullable();
+            $table->string('venue')->nullable(); // Renamed from location
             $table->text('notes')->nullable();
             $table->timestamps();
     

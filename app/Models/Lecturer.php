@@ -45,4 +45,9 @@ class Lecturer extends Model
     {
         return $this->specialization === $specialization;
     }
+
+        public function classSchedules()
+    {
+        return $this->hasMany(ClassSchedule::class);
+    }
 }

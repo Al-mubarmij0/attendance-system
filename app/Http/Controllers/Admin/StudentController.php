@@ -11,8 +11,10 @@ class StudentController extends Controller
     // Display the list of students
     public function index()
     {
-        $students = Student::all(); // Or paginate if you have a lot of students
+        $students = Student::with('user')->paginate(10); 
         return view('admin.students.index', compact('students'));
+
+          // Add this line if needed for the modal
     }
 
     // Show form to create a new student
