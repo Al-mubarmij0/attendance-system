@@ -74,22 +74,52 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-md-6">
+        
+        {{-- QR Code in one column --}}
+        <div class="col-md-6 mb-4">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title">Your QR Code</h5>
                     <div class="text-center mb-3">
-                        <img src="{{ asset('storage/qrcodes/'.$user->id.'.png') }}" alt="QR Code" style="width: 150px; height: 150px;" class="img-fluid">
+                        <img src="{{ asset('storage/qrcodes/' . $user->id . '.png') }}"
+                            alt="QR Code"
+                            class="img-thumbnail rounded"
+                            style="width: 150px; height: 150px; object-fit: contain;">
                     </div>
-                    <p class="card-text">Present this QR code to mark your attendance in class.</p>
+                    <p class="text-muted">Scan this code during class to register your attendance.</p>
                     <div class="d-flex justify-content-between">
-                        <a href="#" class="btn btn-primary">View Full QR</a>
-                        <a href="{{ asset('storage/qrcodes/'.$user->id.'.png') }}" download class="btn btn-outline-secondary">Download</a>
+                        <a href="{{ asset('storage/qrcodes/' . $user->id . '.png') }}" target="_blank" class="btn btn-primary btn-sm">View Full QR</a>
+                        <a href="{{ asset('storage/qrcodes/' . $user->id . '.png') }}" download class="btn btn-outline-secondary btn-sm">Download</a>
                     </div>
                 </div>
             </div>
         </div>
+
+        {{-- Barcode in its own column --}}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Your Barcode</h5>
+                    @if($studentProfile && $studentProfile->barcode_path && Storage::disk('public')->exists($studentProfile->barcode_path))
+                        <div class="text-center mb-3">
+                            <img src="{{ asset('storage/' . $studentProfile->barcode_path) }}"
+                                alt="Student Barcode"
+                                class="img-thumbnail rounded"
+                                style="max-height: 100px; object-fit: contain;">
+                        </div>
+                        <p class="text-muted">Use this barcode at attendance checkpoints.</p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ asset('storage/' . $studentProfile->barcode_path) }}" target="_blank" class="btn btn-primary btn-sm">View Full Barcode</a>
+                            <a href="{{ asset('storage/' . $studentProfile->barcode_path) }}" download class="btn btn-outline-secondary btn-sm">Download</a>
+                        </div>
+                    @else
+                        <p class="text-muted">Barcode not available. Please contact the admin.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+    </div>
 
         <div class="col-md-12">
             <div class="card shadow-sm">
@@ -142,7 +172,8 @@
             </div>
         </div>
 
-       <div class="col-md-6">
+        <div class="row mt-4">
+            <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Upcoming Classes</h5>
@@ -214,6 +245,9 @@
                 </div>
             </div>
         </div>
+
+        </div>
+       
     </div>
 </div>
 @endsection

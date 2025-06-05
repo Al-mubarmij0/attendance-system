@@ -12,11 +12,12 @@ class Student extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', // Foreign key to the users table
-        'index_number', // Assuming students have an index number
-        'program',
+        'user_id',
+        'index_number',
+        'department',    
         'level',
-        // ... any other student-specific fields
+        'barcode_path',
+        'qrcode_path',    
     ];
 
     /**
