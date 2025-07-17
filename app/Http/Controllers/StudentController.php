@@ -6,11 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Course;
 use App\Models\ClassSchedule;
-use App\Models\Student; // Crucial: We need to import the Student model now
+use App\Models\Student;
 
 class StudentController extends Controller
 {
-  public function index()
+    public function index()
     {
         $user = Auth::user();
 
@@ -41,4 +41,40 @@ class StudentController extends Controller
         return view('student.dashboard', compact('user', 'studentProfile', 'enrolledCourses', 'upcomingSchedules'));
     }
 
+    // ✅ Show enrollment form
+    public function showEnrollmentForm()
+    {
+        $user = Auth::user();
+        $student = $user->student;
+
+        if (!$student) {
+            abort(403, 'Access denied.');
+        }
+
+       
+
+        $department = $student->department;
+
+        // Only fetch courses under student's department
+        $courses = Course::where('department', $department)->get();
+
+        $enrolled = $student->enrolledCourses->pluck('id')->toArray();
+
+        return view('student.enroll', compact('courses', 'enrolled'));
+    }
+
+    // ✅ Handle form submission
+    public function enroll(Request $request)
+    {
+        $request->validate([
+            'courses' => 'array',
+            'courses.*' => 'exists:courses,id'
+        ]);
+
+        $student = Auth::user()->student;
+
+        $student->enrolledCourses()->sync($request->courses);
+
+        return redirect()->route('student.dashboard')->with('success', 'Courses enrolled successfully!');
+    }
 }

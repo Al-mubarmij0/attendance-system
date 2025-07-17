@@ -50,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/lecturer/dashboard', [LecturerController::class, 'index'])->name('lecturer.dashboard');
     Route::get('/student/dashboard', [StudentController::class, 'index'])->name('student.dashboard');
+    
 
     // Profile Management
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -108,8 +109,10 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/schedule/{id}', [ScheduleController::class, 'update'])->name('schedule.update'); // Update schedule
         Route::delete('/schedule/{id}', [ScheduleController::class, 'destroy'])->name('schedule.destroy'); // Delete schedule
 
-        // Attendance Scan (QR)
+        // attendance
         Route::get('/attendance/scan', [LecturerController::class, 'scanAttendance'])->name('attendance.scan');
+        Route::post('/attendance/mark', [LecturerController::class, 'markAttendance'])->name('attendance.mark');
+
 
         // Attendance Reports
         Route::get('/attendance/reports', [LecturerController::class, 'attendanceReports'])->name('attendance.reports');
@@ -117,6 +120,19 @@ Route::middleware(['auth'])->group(function () {
         // Profile
         Route::get('/profile', [LecturerController::class, 'profile'])->name('profile');
     });
+       
+    // Student Routes
+    Route::prefix('student')->name('student.')->group(function () {
+        // Dashboard
+        Route::get('/dashboard', [StudentController::class, 'index'])->name('dashboard');
+
+        // Course Enrollment
+        Route::get('/courses/enroll', [StudentController::class, 'showEnrollmentForm'])->name('enroll.form');
+        Route::post('/courses/enroll', [StudentController::class, 'enroll'])->name('enroll.submit');
+
+        // (Optional future: Attendance, Profile, Reports, etc.)
+    });
+
 
 });
 

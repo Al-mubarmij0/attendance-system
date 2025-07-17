@@ -49,7 +49,7 @@ class StudentController extends Controller
         // Generate and save barcode
         $barcodeGenerator = new BarcodeGeneratorPNG();
         $barcode = $barcodeGenerator->getBarcode($validated['index_number'], $barcodeGenerator::TYPE_CODE_128);
-        $barcodePath = 'barcodes/' . str_replace('/', '_', $validated['index_number']) . '.png'; // Avoid issues with slashes in filenames
+        $barcodePath = 'barcodes/' . str_replace('/', '_', $validated['index_number']) . '.png';
         Storage::disk('public')->put($barcodePath, $barcode);
 
         // Generate and save QR code

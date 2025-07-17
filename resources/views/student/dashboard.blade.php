@@ -126,7 +126,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title mb-0">Your Current Courses</h5>
-                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                       <a href="{{ route('student.enroll.form') }}" class="btn btn-sm btn-primary">Enroll in Courses</a>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -193,7 +193,7 @@
                                 {{ \Carbon\Carbon::parse($schedule->end_time)->format('h:i A') }}
                             </p>
                             <small>
-                                Room: {{ $schedule->venue ?? 'N/A' }} |
+                                venue: {{ $schedule->venue ?? 'N/A' }} |
                                 Lecturer: {{ $schedule->lecturer->name ?? 'N/A' }}
                             </small>
                             @if($schedule->notes)
